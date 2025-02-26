@@ -1,9 +1,11 @@
 import re
 import requests
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 def extract_video_links(url):
     headers = {
@@ -26,7 +28,7 @@ def extract_video_links(url):
     # Extract videos from <iframe> and <embed> (for embedded videos)
     for iframe in soup.find_all(["iframe", "embed"]):
         src = iframe.get("src")
-        if src and "youtube.com" in src or "vimeo.com" in src:
+        if src and ("youtube.com" in src or "vimeo.com" in src):
             video_links.add(src)
     
     # Extract video links from script tags (hidden sources)
@@ -48,4 +50,4 @@ def get_video():
     return jsonify({"videos": video_urls})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
